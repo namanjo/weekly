@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %}
+{% block title_block %}Create Blog{% endblock %}
+
+{% block body_block %}
+
+<div class="jumbotron">
+  <h2>Create Post</h2>
+</div>
+
+<div class="panel">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% if form.errors %}
+      <p class="errormsg">{{ form.errors }}</p>
+    {% endif %}
+
+    <input type="submit" class="btn btn-primary" value="Submit">
+
+  </form>
+</div>
+
+{% endblock %}

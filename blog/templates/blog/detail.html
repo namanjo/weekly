@@ -1,0 +1,23 @@
+{% extends 'blog/base.html' %}
+{% block title_blok %}Blog detail{% endblock %}
+
+
+{% block body_block %}
+
+  <h2>{{ blog.title }}</h2>
+  <p>By: {{ blog.author }}</p>
+
+  {% if blog.published_date %}
+    <p>Published on: {{ blog.published_date }}</p>
+  {% else %}
+    <a class="btn btn-primary" href="{% url 'blog_publish' pk=blog.pk %}">Publish</a>
+  {% endif %}
+
+  {% if blog.cover_pic %}
+    <img src="{{ blog.cover_pic.url }}" alt="Cover Picture" class='coverpic'>
+  {% endif %}
+
+  <p>{{ blog.text }}</p>
+
+
+{% endblock %}
