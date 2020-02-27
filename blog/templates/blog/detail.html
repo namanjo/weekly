@@ -13,11 +13,42 @@
     <a class="btn btn-primary" href="{% url 'blog_publish' pk=blog.pk %}">Publish</a>
   {% endif %}
 
+  {% if user.is_authenticated %}
+  <!-- <a href="{% url 'blog_update' blog_id=blog.pk %}" class="btn btn-dark">Blog Update</a> -->
+    <a href="{% url 'blog_delete' blog_id=blog.pk %}" class="btn btn-danger">Blog Delete</a>
+  {% endif %}
+
   {% if blog.cover_pic %}
     <img src="{{ blog.cover_pic.url }}" alt="Cover Picture" class='coverpic'>
   {% endif %}
 
   <p>{{ blog.text }}</p>
+
+  <hr>
+
+  <h3>Comments</h3>
+  <div class="panel">
+    <form method="POST">
+      {% csrf_token %}
+      {{ comnt_form.as_p }}
+
+      {% if form.errors %}
+        <p class="errormsg">{{ form.errors }}</p>
+      {% endif %}
+
+      <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+  </div>
+
+
+
+  {% for comment in blog.comments.all %}
+    <p>{{ comment.comment_text }} <br> By: {{ comment.author }}</p>
+    <p>{{ comment.created_date }}</p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'comment_remove' pk=comment.pk %}" class='btn btn-danger' >Delete</a>
+    {% endif %}
+  {% endfor %}
 
 
 {% endblock %}
