@@ -4,7 +4,10 @@
 {% block body_block %}
 
 <div class="jumbotron">
-  <h2>Create Post</h2>
+  {% if not form.instance.pk %}
+    <h2>Create Post</h2>
+  {% else %}
+    <h2>Update Post</h2>
 </div>
 
 <div class="panel">

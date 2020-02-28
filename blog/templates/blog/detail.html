@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
 {% block title_blok %}Blog detail{% endblock %}
-
+{% block title_block %}Blog Detail{% endblock %}
 
 {% block body_block %}
 
@@ -10,11 +10,12 @@
   {% if blog.published_date %}
     <p>Published on: {{ blog.published_date }}</p>
   {% else %}
-    <a class="btn btn-primary" href="{% url 'blog_publish' pk=blog.pk %}">Publish</a>
+    <p>Not Published</p>
   {% endif %}
 
-  {% if user.is_authenticated %}
-  <!-- <a href="{% url 'blog_update' blog_id=blog.pk %}" class="btn btn-dark">Blog Update</a> -->
+  {% if request.user == blog.author %}
+    <a class="btn btn-primary" href="{% url 'blog_publish' pk=blog.pk %}">Publish</a>
+    <a href="{% url 'blog_update' blog_id=blog.pk %}" class="btn btn-dark">Blog Update</a>
     <a href="{% url 'blog_delete' blog_id=blog.pk %}" class="btn btn-danger">Blog Delete</a>
   {% endif %}
 
@@ -26,6 +27,7 @@
 
   <hr>
 
+{% if comnt_form %}
   <h3>Comments</h3>
   <div class="panel">
     <form method="POST">
@@ -39,6 +41,7 @@
       <input type="submit" value="Submit" class="btn btn-primary">
     </form>
   </div>
+{% endif %}
 
 
 

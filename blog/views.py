@@ -5,6 +5,7 @@ from blog.models import Blog, Comment
 from blog.forms import BlogForm, CommentForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.forms import modelform_factory
 
 
 
@@ -20,25 +21,35 @@ def about(request):
 def detail(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
 
-    #for comment adding functionality
-    if request.method == "POST":
-        comnt_form = CommentForm(request.POST)
-        if comnt_form.is_valid:
-            comnt_form = comnt_form.save(commit=False)
-            comnt_form.blog = blog
-            comnt_form.save()
-            return redirect('blog_detail', pk=blog.pk)
-    else:
-        comnt_form = CommentForm()
+    #this functionality will work for published post
+    if blog.published_date:
+        #for comment adding functionality
+        if request.method == "POST":
+            comnt_form = CommentForm(request.POST)
+            if comnt_form.is_valid():
+                comnt_form = comnt_form.save(commit=False)
+                comnt_form.blog = blog
+                comnt_form.save()
+                return redirect('blog_detail', pk=blog.pk)
+        else:
+            comnt_form = CommentForm()
+        return render(request, 'blog/detail.html', {'blog': blog, 'comnt_form':comnt_form})
 
-    return render(request, 'blog/detail.html', {'blog': blog, 'comnt_form':comnt_form})
+    #this functionality will work for draft posts
+    else:
+        if request.user.is_authenticated and request.user == blog.author:      #made if statement because only the ,
+            return render(request, 'blog/detail.html', {'blog': blog})         #person who created the post can see it.
+        else:
+            logout(request)
+            return render(request, 'blog/login.html', {'error_message': 'Must be the author to access this page.'})
+
 
 
 @login_required
 def create_blog(request):
     if request.method == 'POST':
         form = BlogForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             blog = form.save(commit=False)
             blog.author = request.user
             if 'cover_pic' in request.FILES:
@@ -49,22 +60,28 @@ def create_blog(request):
         form = BlogForm()
     return render(request, 'blog/blog_create.html', {'form':form})
 
-# @login_required
-# def update_blog(request, blog_id):
-#     blog = Blog.objects.get(pk=blog_id)
-#     form = BlogForm(instance=blog)
-#     fields = ('title', 'text')
-#
-#     if form.is_valid:
-#         form.save()
-#         return redirect('blog_detail', pk=blog_id)
-#     return render(request, 'blog/blog_create.html', {'form':form})
+@login_required
+def update_blog(request, blog_id):
+    blog = Blog.objects.get(pk=blog_id)
 
+    if request.user != blog.author:
+        logout(request)
+        return HttpResponse("<h2>You dont have access to this page.</h2>")
+    else:
+        BlogUpdateForm = modelform_factory(Blog, form=BlogForm, fields=("title", "text"))
+        form = BlogUpdateForm(instance=blog)
+
+        if request.method == 'POST':
+            form = BlogUpdateForm(request.POST, instance=blog)
+            if form.is_valid():
+                form.save(commit=True)
+                return redirect('blog_detail', pk=blog_id)
+        return render(request, 'blog/blog_create.html', {'form':form})
 
 
 @login_required
 def draft_blogs(request):
-    blog_list = Blog.objects.filter(published_date__isnull=True).order_by('-published_date')
+    blog_list = Blog.objects.filter(author=request.user, published_date__isnull=True).order_by('-published_date')
     return render(request, 'blog/blog_drafts.html', {'blogs': blog_list})
 
 
