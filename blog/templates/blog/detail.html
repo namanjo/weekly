@@ -48,7 +48,7 @@
   {% for comment in blog.comments.all %}
     <p>{{ comment.comment_text }} <br> By: {{ comment.author }}</p>
     <p>{{ comment.created_date }}</p>
-    {% if user.is_authenticated %}
+    {% if request.user == comment.blog.author %}
       <a href="{% url 'comment_remove' pk=comment.pk %}" class='btn btn-danger' >Delete</a>
     {% endif %}
   {% endfor %}

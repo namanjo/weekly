@@ -88,23 +88,33 @@ def draft_blogs(request):
 @login_required
 def blog_publish(request, pk):
     blog = get_object_or_404(Blog, pk=pk)
-    blog.publish()
-    return redirect('index')
+
+    if request.user != blog.author:
+        return redirect('logout')
+    else:
+        blog.publish()
+        return redirect('index')
 
 
 @login_required
 def blog_delete(request, blog_id):
     blog = Blog.objects.get(pk=blog_id)
-    blog.delete()
-    return redirect('index')
+    if request.user != blog.author:
+        return redirect('logout')
+    else:
+        blog.delete()
+        return redirect('index')
 
 
 @login_required
 def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
-    comment_blog_pk = comment.blog.pk
-    comment.delete()
-    return redirect('blog_detail', pk=comment_blog_pk)
+    if request.user != comment.blog.author:
+        return redirect('logout')
+    else:
+        comment_blog_pk = comment.blog.pk
+        comment.delete()
+        return redirect('blog_detail', pk=comment_blog_pk)
 
 
 def login_view(request):
