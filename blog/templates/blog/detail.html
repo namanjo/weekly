@@ -34,10 +34,6 @@
       {% csrf_token %}
       {{ comnt_form.as_p }}
 
-      {% if form.errors %}
-        <p class="errormsg">{{ form.errors }}</p>
-      {% endif %}
-
       <input type="submit" value="Submit" class="btn btn-primary">
     </form>
   </div>

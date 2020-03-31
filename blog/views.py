@@ -48,7 +48,7 @@ def detail(request, pk):
 @login_required
 def create_blog(request):
     if request.method == 'POST':
-        form = BlogForm(request.POST)
+        form = BlogForm(request.POST, request.FILES)
         if form.is_valid():
             blog = form.save(commit=False)
             blog.author = request.user

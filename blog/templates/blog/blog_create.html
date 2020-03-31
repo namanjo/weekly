@@ -17,10 +17,6 @@
     {% csrf_token %}
     {{ form.as_p }}
 
-    {% if form.errors %}
-      <p class="errormsg">{{ form.errors }}</p>
-    {% endif %}
-
     <input type="submit" class="btn btn-primary" value="Submit">
 
   </form>

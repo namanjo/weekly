@@ -40,3 +40,13 @@ body{
 .errormsg{
   color: red;
 }
+
+.errorlist{
+  font-size: 14px;
+  color: red;
+  line-height: 1;
+}
+
+.errorlist li{
+  list-style-type: none;
+}
