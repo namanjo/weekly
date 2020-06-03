@@ -18,8 +18,8 @@ def about(request):
     return render(request, 'blog/about.html')
 
 
-def detail(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+def detail(request, title_slug):
+    blog = get_object_or_404(Blog, slug=title_slug)
 
     #this functionality will work for published post
     if blog.published_date:
@@ -30,7 +30,7 @@ def detail(request, pk):
                 comnt_form = comnt_form.save(commit=False)
                 comnt_form.blog = blog
                 comnt_form.save()
-                return redirect('blog_detail', pk=blog.pk)
+                return redirect('blog_detail', title_slug=blog.slug)
         else:
             comnt_form = CommentForm()
         return render(request, 'blog/detail.html', {'blog': blog, 'comnt_form':comnt_form})
@@ -55,14 +55,14 @@ def create_blog(request):
             if 'cover_pic' in request.FILES:
                 blog.cover_pic = request.FILES['cover_pic']
             blog.save()
-            return redirect('blog_detail', pk=blog.pk)
+            return redirect('blog_detail', title_slug=blog.slug)
     else:
         form = BlogForm()
     return render(request, 'blog/blog_create.html', {'form':form})
 
 @login_required
-def update_blog(request, blog_id):
-    blog = Blog.objects.get(pk=blog_id)
+def update_blog(request, title_slug):
+    blog = Blog.objects.get(slug=title_slug)
 
     if request.user != blog.author:
         logout(request)
@@ -75,7 +75,7 @@ def update_blog(request, blog_id):
             form = BlogUpdateForm(request.POST, instance=blog)
             if form.is_valid():
                 form.save(commit=True)
-                return redirect('blog_detail', pk=blog_id)
+                return redirect('blog_detail', title_slug=title_slug)
         return render(request, 'blog/blog_create.html', {'form':form})
 
 
@@ -86,8 +86,8 @@ def draft_blogs(request):
 
 
 @login_required
-def blog_publish(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+def blog_publish(request, title_slug):
+    blog = get_object_or_404(Blog, slug=title_slug)
 
     if request.user != blog.author:
         return redirect('logout')
@@ -97,8 +97,8 @@ def blog_publish(request, pk):
 
 
 @login_required
-def blog_delete(request, blog_id):
-    blog = Blog.objects.get(pk=blog_id)
+def blog_delete(request, title_slug):
+    blog = Blog.objects.get(slug=title_slug)
     if request.user != blog.author:
         return redirect('logout')
     else:

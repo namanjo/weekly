@@ -8,7 +8,7 @@
 
   {% for blog in blogs %}
     <div class="blogpanel">
-      <h3><a href="{% url 'blog_detail' pk=blog.pk %}">{{ blog.title }}</a></h3>
+      <h3><a href="{% url 'blog_detail' title_slug=blog.slug %}">{{ blog.title }}</a></h3>
       <p>By: {{ blog.author }}</p>
       <p>Created on: {{ blog.created_date }}</p>
       <p>{{ blog.text|truncatechars:20 }}</p>

@@ -30,6 +30,20 @@ body{
   text-decoration: none;
 }
 
+.comment-panel{
+  color: #fff;
+  width: 60%;
+  padding: 10px;
+  background-color: #222a2d;
+  margin-bottom: 20px;
+}
+
+.comment-inner{
+  font-size: 16px;
+  margin-left: 20px;
+  line-height: 1em;
+}
+
 .coverpic{
   margin: auto;
   max-width: 600px;

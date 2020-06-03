@@ -4,50 +4,61 @@
 
 {% block body_block %}
 
-  <h2>{{ blog.title }}</h2>
-  <p>By: {{ blog.author }}</p>
-
-  {% if blog.published_date %}
-    <p>Published on: {{ blog.published_date }}</p>
-  {% else %}
-    <p>Not Published</p>
-  {% endif %}
-
+  <h2 class="card-title">{{ blog.title }}</h2>
   {% if request.user == blog.author %}
-    <a class="btn btn-primary" href="{% url 'blog_publish' pk=blog.pk %}">Publish</a>
-    <a href="{% url 'blog_update' blog_id=blog.pk %}" class="btn btn-dark">Blog Update</a>
-    <a href="{% url 'blog_delete' blog_id=blog.pk %}" class="btn btn-danger">Blog Delete</a>
+    <a class="btn btn-primary" href="{% url 'blog_publish' title_slug=blog.slug %}">Publish</a>
+    <a href="{% url 'blog_update' title_slug=blog.slug %}" class="btn btn-dark">Blog Update</a>
+    <a href="{% url 'blog_delete' title_slug=blog.slug %}" class="btn btn-danger">Blog Delete</a>
   {% endif %}
 
-  {% if blog.cover_pic %}
-    <img src="{{ blog.cover_pic.url }}" alt="Cover Picture" class='coverpic'>
-  {% endif %}
 
-  <p>{{ blog.text }}</p>
+  <div class="card mb-3">
+
+    {% if blog.cover_pic %}
+      <img class="card-img-top" src="{{ blog.cover_pic.url }}" style="max-height: 35rem;" alt="Card image cap">
+    {% endif %}
+
+    <div class="card-body">
+      {% if blog.published_date %}
+      <h4 class="card-subtitle mb-2 text-muted" style="font-weight:800;">Published on: {{ blog.published_date }}
+      By: {{ blog.author }}</h4>
+
+      {% else %}
+        <h4 class="card-subtitle mb-2 text-muted">Not Published</h4>
+      {% endif %}
+
+      <p class="card-text nj">{{ blog.text }}</p>
+      <h6 class="card-subtitle mb-2 text-muted">By: {{ blog.author }}</h6>
+    </div>
+
+  </div>
 
   <hr>
 
-{% if comnt_form %}
-  <h3>Comments</h3>
-  <div class="panel">
-    <form method="POST">
-      {% csrf_token %}
-      {{ comnt_form.as_p }}
+  {% if comnt_form %}
+    <h3>Comments</h3>
+    <div class="panel">
+      <form method="POST">
+        {% csrf_token %}
+        {{ comnt_form.as_p }}
 
-      <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
-  </div>
-{% endif %}
-
-
+        <input type="submit" value="Submit" class="btn btn-primary">
+      </form>
+    </div>
+  {% endif %}
 
   {% for comment in blog.comments.all %}
-    <p>{{ comment.comment_text }} <br> By: {{ comment.author }}</p>
-    <p>{{ comment.created_date }}</p>
-    {% if request.user == comment.blog.author %}
-      <a href="{% url 'comment_remove' pk=comment.pk %}" class='btn btn-danger' >Delete</a>
-    {% endif %}
-  {% endfor %}
+    <div class="comment-panel">
+      <p>"{{ comment.comment_text }}"</p>
+      <div class="comment-inner">
+        <p>By: {{ comment.author }}</p>
+        <p>{{ comment.created_date }}</p>
+      </div>
 
+      {% if request.user == comment.blog.author %}
+        <a href="{% url 'comment_remove' pk=comment.pk %}" class='btn btn-danger' >Delete</a>
+      {% endif %}
+    </div>
+  {% endfor %}
 
 {% endblock %}
