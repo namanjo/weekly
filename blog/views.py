@@ -62,7 +62,7 @@ def create_blog(request):
 
 @login_required
 def update_blog(request, title_slug):
-    blog = Blog.objects.get(slug=title_slug)
+    blog = get_object_or_404(Blog, slug=title_slug)
 
     if request.user != blog.author:
         logout(request)
@@ -75,7 +75,7 @@ def update_blog(request, title_slug):
             form = BlogUpdateForm(request.POST, instance=blog)
             if form.is_valid():
                 form.save(commit=True)
-                return redirect('blog_detail', title_slug=title_slug)
+                return redirect('blog_detail', title_slug=blog.slug)
         return render(request, 'blog/blog_create.html', {'form':form})
 
 
@@ -98,7 +98,7 @@ def blog_publish(request, title_slug):
 
 @login_required
 def blog_delete(request, title_slug):
-    blog = Blog.objects.get(slug=title_slug)
+    blog = get_object_or_404(Blog, slug=title_slug)
     if request.user != blog.author:
         return redirect('logout')
     else:
